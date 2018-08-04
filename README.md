@@ -18,6 +18,10 @@ const server = IRC.createServer();
 server.listen(6667);
 ```
 
+### SPEC
+
++ https://tools.ietf.org/html/rfc1459
+
 ### Contributing
 - Fork this Repo first
 - Clone your Repo

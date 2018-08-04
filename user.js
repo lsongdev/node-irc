@@ -1,10 +1,10 @@
 const to = require('to2');
+const {debuglog} = require('util');
 const Parser = require('./parser');
 const Message = require('./message');
-const { Duplex } = require('readable-stream');
+const { Duplex } = require('stream');
 
-const debug = require('debug')('ircs:User');
-
+const debug = debuglog('ircs:User');
 /**
  * Represents a User on the server.
  */
@@ -27,9 +27,10 @@ class User extends Duplex {
       cb()
     }))
 
-    sock.on('end', () => {
-      this.onReceive(new Message(null, 'QUIT', []))
-    })
+    sock.on('end', e => {
+      this.onReceive(new Message(null, 'QUIT', []));
+      this.emit('end', e);
+    });
   }
 
   onReceive (message) {
@@ -45,8 +46,17 @@ class User extends Duplex {
 
   _write (message, enc, cb) {
     debug('write', message + '')
-    this.socket.write(`${message}\r\n`)
+    this.socket.write(`${message}\r\n`);
     cb()
+  }
+
+  join(channel){
+    if(-1 === this.channels.indexOf(channel)){
+      this.channels.push(channel);
+    }else{
+      throw new Error(`Already join channel: ${channel.name}`);
+    }
+    return this;
   }
 
   /**
@@ -59,7 +69,7 @@ class User extends Duplex {
       message = new Message(...arguments)
     }
     debug('send', message + '')
-    this.write(message)
+    this.write(message);
   }
 
   /**
@@ -99,6 +109,14 @@ class User extends Duplex {
   end(){
     this.socket.end();
     return this;
+  }
+  
+  toString(){
+    return this.mask();
+  }
+
+  inspect(){
+    return this.toString();
   }
 }
 

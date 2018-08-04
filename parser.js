@@ -1,9 +1,10 @@
 const split = require('split2');
+const {debuglog} = require('util');
 const through = require('through2');
 const combine = require('stream-combiner');
 const Message = require('./message');
 
-const debug = require('debug')('ircs:MessageParser')
+const debug = debuglog('ircs:MessageParser')
 
 function MessageParser () {
   return combine(

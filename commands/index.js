@@ -23,6 +23,8 @@ module.exports = {
   PRIVMSG: require('./privmsg'),
   // Sends a notice to a user or channel.
   NOTICE: require('./notice'),
+  // ping
+  PING: require('./ping'),
   // Disconnects.
   QUIT: require('./quit'),
 };

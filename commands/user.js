@@ -1,12 +1,26 @@
-const pkg = require('../../package.json')
-const debug = require('debug')('ircs:commands:user')
+const { debuglog } = require('util');
+const pkg = require('../package.json')
+const { 
+  ERR_NEEDMOREPARAMS 
+} = require('../replies');
 
-module.exports = function user ({ user, server, parameters: [ username, hostname, servername, realname ] }) {
-  debug('USER', user.mask(), username, hostname, servername, realname)
+const debug = debuglog('ircs:commands:user')
+/**
+ * Command: USER
+   Parameters: <username> <hostname> <servername> <realname>
+ */
+function USER({ user, server, parameters }) {
 
-  user.username = username
-  user.servername = server.hostname
-  user.realname = realname
+  if(parameters.length !== 4){
+    return user.send(server, ERR_NEEDMOREPARAMS, [ 'USER', ':Not enough parameters' ]);
+  }
+
+  const [ username, hostname, servername, realname ] = parameters;
+  debug('USER', user.mask(), username, hostname, servername, realname);
+
+  user.username = username;
+  user.realname = realname;
+  user.servername = servername;
 
   user.send(server, '001', [ user.nickname, ':Welcome' ]);
   user.send(server, '002', [ user.nickname, `:Your host is ${server.hostname} running version ${pkg.version}` ]);
@@ -14,3 +28,5 @@ module.exports = function user ({ user, server, parameters: [ username, hostname
   user.send(server, '004', [ user.nickname, pkg.name, pkg.version ]);
   user.send(server, 'MODE', [ user.nickname, '+w' ]);
 }
+
+module.exports = USER;

@@ -1,6 +1,6 @@
 {
   "name": "irc-server",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "IRC server implementation in Node.js",
   "main": "index.js",
   "directories": {
@@ -8,16 +8,16 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node example"
   },
-  "keywords": [ "irc", "irc-server" ],
+  "keywords": [
+    "irc",
+    "irc-server"
+  ],
   "author": "lsong",
   "license": "MIT",
   "dependencies": {
-    "array-find": "^1.0.0",
-    "debug": "^3.0.0",
     "each-async": "^1.1.1",
-    "readable-stream": "^2.3.6",
     "split2": "^2.1.1",
     "stream-combiner": "^0.2.2",
     "to2": "^1.0.0"

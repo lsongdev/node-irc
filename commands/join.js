@@ -10,8 +10,7 @@ module.exports = function join (opts) {
   const { user, server, parameters: [ channelNames ] } = opts
 
   if (!channelNames) {
-    user.send(server, ERR_NEEDMOREPARAMS, [ 'JOIN', ':Not enough parameters' ])
-    return
+    return user.send(server, ERR_NEEDMOREPARAMS, [ 'JOIN', ':Not enough parameters' ])
   }
 
   for (const channelName of channelNames.split(',')) {

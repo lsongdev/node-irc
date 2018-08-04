@@ -1,7 +1,12 @@
 const EventEmitter = require('events');
 
 class IRC extends EventEmitter {
+  connect(){
 
+  }
+  join(){
+    
+  }
 }
 
 IRC.Server = require('./server');

@@ -2,8 +2,8 @@ const {
   ERR_NONICKNAMEGIVEN,
   ERR_NICKNAMEINUSE
 } = require('../replies')
-
-const debug = require('debug')('ircs:commands:nick')
+const {debuglog} = require('util');
+const debug = debuglog('ircs:commands:nick')
 
 module.exports = function nick ({ user, server, parameters: [ nickname ] }) {
   nickname = nickname.trim()
@@ -15,8 +15,7 @@ module.exports = function nick ({ user, server, parameters: [ nickname ] }) {
     return
   }
   if (!nickname || nickname.length === 0) {
-    return user.send(server, ERR_NONICKNAMEGIVEN,
-      [ 'No nickname given' ])
+    return user.send(server, ERR_NONICKNAMEGIVEN, [ 'No nickname given' ]);
   }
 
   let lnick = nickname.toLowerCase()

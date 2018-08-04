@@ -1,7 +1,8 @@
 const Modes = require('./modes');
 const Message = require('./message');
+const { debuglog } = require('util');
 
-const debug = require('debug')('ircs:Channel')
+const debug = debuglog('ircs:Channel');
 
 /**
  * Represents an IRC Channel on the server.
@@ -35,12 +36,16 @@ class Channel {
    * @param {User} user Joining user.
    */
   join (user) {
-    this.users.push(user)
-    user.channels.push(this)
-
-    if (this.users.length === 1) {
-      this.addOp(user)
+    if(this.hasUser(user)){
+      throw new Error(`User ${user.nickname} has already join this channel ${this.name}`);
+    }else{
+      user.join(this);
+      this.users.push(user);
     }
+    if (this.users.length === 1) {
+      this.addOp(user);
+    }
+    return this;
   }
 
   /**
@@ -77,12 +82,10 @@ class Channel {
    */
   send (message) {
     if (!(message instanceof Message)) {
-      message = new Message(...arguments)
+      message = new Message(...arguments);
     }
-    debug(this.name, 'send', message.toString())
-    this.users.forEach((u) => {
-      u.send(message)
-    })
+    debug(this.name, 'send', message.toString());
+    this.users.forEach(user => user.send(message));
   }
 
   /**
@@ -135,21 +138,33 @@ class Channel {
     this.modes.remove(flag)
   }
 
-  isPrivate () {
+  get isPrivate () {
     return this.modes.has('p')
   }
 
-  isSecret () {
+  get isSecret () {
     return this.modes.has('s')
   }
 
-  isInviteOnly () {
+  get isInviteOnly () {
     return this.modes.has('i')
   }
 
-  isModerated () {
+  get isModerated () {
     return this.modes.has('m')
   }
+
+  inspect(){
+    return this.toString();
+  }
+  toString(){
+    return `
+      channel name: ${this.name}
+             topic: ${this.topic}
+             users: ${this.users.length}
+              ${this.users.map(u => `- ${u.nickname}`).join('\n')}
+    `;
+  };
 }
 
 module.exports = Channel;

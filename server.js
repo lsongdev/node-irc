@@ -1,13 +1,13 @@
 const net = require('net');
 const to = require('to2');
-const find = require('array-find')
-const each = require('each-async')
-const User = require('./user')
+const {debuglog} = require('util');
+const each = require('each-async');
+const User = require('./user');
 const Channel = require('./channel');
 const Message = require('./message');
 const commands = require('./commands');
 
-const debug = require('debug')('ircs:Server')
+const debug = debuglog('ircs:Server')
 
 /**
  * Represents a single IRC server.
@@ -19,28 +19,27 @@ class Server extends net.Server {
    * @see Server
    * @return {Server}
    */
-  static createServer (options, connectionListener) {
-    return new Server(options, connectionListener)
+  static createServer (options, messageHandler) {
+    return new Server(options, messageHandler)
   }
 
   /**
    * Create an IRC server.
    *
    * @param {Object} options `net.Server` options.
-   * @param {function()} connectionListener `net.Server` connection listener.
+   * @param {function()} messageHandler `net.Server` connection listener.
    */
-  constructor (options = {}, connectionListener) {
-    super(options, connectionListener)
+  constructor (options = {}, messageHandler) {
+    super(options)
     this.users = [];
     this.middleware = [];
     this.created = new Date();
     this.channels = new Map();
     this.hostname = options.hostname || 'localhost';
     this.on('connection', sock => {
-      debug('incoming connection', sock.remoteAddress)
-      const user = new User(sock)
-      this.emit('user', user);
+      const user = new User(sock);
       this.users.push(user);
+      this.emit('user', user);
     });
 
     this.on('user', user => {
@@ -60,6 +59,10 @@ class Server extends net.Server {
       this.use(command, fn);
     }
 
+    if(messageHandler){
+      this.on('message', messageHandler);
+    }
+
     debug('server started')
   }
 
@@ -72,7 +75,7 @@ class Server extends net.Server {
    */
   findUser (nickname) {
     nickname = normalize(nickname)
-    return find(this.users, user => normalize(user.nickname) === nickname)
+    return this.users.find(user => normalize(user.nickname) === nickname);
   }
 
   /**
@@ -114,10 +117,8 @@ class Server extends net.Server {
    * @return {Channel} The Channel.
    */
   getChannel (channelName) {
-    if (!Channel.isValidChannelName(channelName)) {
-      return
-    }
-    return this.findChannel(channelName) || this.createChannel(channelName)
+    if (!Channel.isValidChannelName(channelName)) return;
+    return this.findChannel(channelName) || this.createChannel(channelName);
   }
 
   /**
