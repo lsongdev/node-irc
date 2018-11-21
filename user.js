@@ -26,7 +26,9 @@ class User extends Duplex {
       this.onReceive(message)
       cb()
     }))
-
+    sock.on('error', e => {
+      debug('error', e);
+    });
     sock.on('end', e => {
       this.onReceive(new Message(null, 'QUIT', []));
       this.emit('end', e);
