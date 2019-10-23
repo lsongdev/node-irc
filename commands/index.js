@@ -3,6 +3,8 @@ module.exports = {
   // Specifies username, hostname, servername and real name for a user.
   // Currently also sends a welcome message back to the user (should change)
   USER: require('./user'),
+  // ISON 
+  ISON: require('./ison'),
   // Shows a list of known channels.
   LIST: require('./list'),
   // Joins a channel.
