@@ -13,7 +13,7 @@ class Channel {
    *
    * @param {string} name Channel name. (Starting with # or &, preferably.)
    */
-  constructor (name) {
+  constructor(name) {
     this.name = name
     this.users = []
     this.topic = null
@@ -21,7 +21,7 @@ class Channel {
     this.modes = new Modes(this)
   }
 
-  static isValidChannelName (name) {
+  static isValidChannelName(name) {
     // https://tools.ietf.org/html/rfc1459#section-1.3
     return name.length <= 200 &&
       (name[0] === '#' || name[0] === '&') &&
@@ -35,10 +35,11 @@ class Channel {
    *
    * @param {User} user Joining user.
    */
-  join (user) {
-    if(this.hasUser(user)){
+  join(user) {
+    if (this.hasUser(user)) {
+      console.log(thsi.toString());
       throw new Error(`User ${user.nickname} has already join this channel ${this.name}`);
-    }else{
+    } else {
       user.join(this);
       this.users.push(user);
     }
@@ -53,7 +54,7 @@ class Channel {
    *
    * @param {User} user Parting user.
    */
-  part (user) {
+  part(user) {
     let i = this.users.indexOf(user)
     if (i !== -1) {
       this.users.splice(i, 1)
@@ -71,7 +72,7 @@ class Channel {
    *
    * @return boolean Whether the user is here.
    */
-  hasUser (user) {
+  hasUser(user) {
     return this.users.indexOf(user) !== -1
   }
 
@@ -80,7 +81,7 @@ class Channel {
    *
    * @param {Message} message Message to send.
    */
-  send (message) {
+  send(message) {
     if (!(message instanceof Message)) {
       message = new Message(...arguments);
     }
@@ -93,7 +94,7 @@ class Channel {
    *
    * @param {Message} message Message to send.
    */
-  broadcast (message) {
+  broadcast(message) {
     if (!(message instanceof Message)) {
       message = new Message(...arguments)
     }
@@ -102,62 +103,62 @@ class Channel {
     })
   }
 
-  addOp (user) {
+  addOp(user) {
     if (!this.hasOp(user)) {
       this.modes.add('o', user.nickname)
     }
   }
 
-  removeOp (user) {
+  removeOp(user) {
     this.modes.remove('o', user.nickname)
   }
 
-  hasOp (user) {
+  hasOp(user) {
     return this.modes.has('o', user.nickname)
   }
 
-  addVoice (user) {
+  addVoice(user) {
     if (!this.hasVoice(user)) {
       this.modes.add('v', user.nickname)
     }
   }
 
-  removeVoice (user) {
+  removeVoice(user) {
     this.modes.remove('v', user.nickname)
   }
 
-  hasVoice (user) {
+  hasVoice(user) {
     return this.modes.has('v', user.nickname)
   }
 
-  addFlag (flag) {
+  addFlag(flag) {
     this.modes.add(flag)
   }
 
-  removeFlag (flag) {
+  removeFlag(flag) {
     this.modes.remove(flag)
   }
 
-  get isPrivate () {
+  get isPrivate() {
     return this.modes.has('p')
   }
 
-  get isSecret () {
+  get isSecret() {
     return this.modes.has('s')
   }
 
-  get isInviteOnly () {
+  get isInviteOnly() {
     return this.modes.has('i')
   }
 
-  get isModerated () {
+  get isModerated() {
     return this.modes.has('m')
   }
 
-  inspect(){
+  inspect() {
     return this.toString();
   }
-  toString(){
+  toString() {
     return `
       channel name: ${this.name}
              topic: ${this.topic}

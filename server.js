@@ -1,7 +1,7 @@
 const net = require('net');
-const to = require('to2');
-const {debuglog} = require('util');
+const { debuglog } = require('util');
 const each = require('each-async');
+const writer = require('flush-write-stream');
 const User = require('./user');
 const Channel = require('./channel');
 const Message = require('./message');
@@ -19,7 +19,7 @@ class Server extends net.Server {
    * @see Server
    * @return {Server}
    */
-  static createServer (options, messageHandler) {
+  static createServer(options, messageHandler) {
     return new Server(options, messageHandler)
   }
 
@@ -29,7 +29,7 @@ class Server extends net.Server {
    * @param {Object} options `net.Server` options.
    * @param {function()} messageHandler `net.Server` connection listener.
    */
-  constructor (options = {}, messageHandler) {
+  constructor(options = {}, messageHandler) {
     super(options)
     this.users = [];
     this.middleware = [];
@@ -43,7 +43,7 @@ class Server extends net.Server {
     });
 
     this.on('user', user => {
-      user.pipe(to.obj((message, enc, cb) => {
+      user.pipe(writer.obj((message, enc, cb) => {
         this.emit('message', message, user);
         cb();
       }));
@@ -54,12 +54,12 @@ class Server extends net.Server {
       debug('message', message + '')
     });
 
-    for(const command in commands){
+    for (const command in commands) {
       const fn = commands[command];
       this.use(command, fn);
     }
 
-    if(messageHandler){
+    if (messageHandler) {
       this.on('message', messageHandler);
     }
 
@@ -73,7 +73,7 @@ class Server extends net.Server {
    *
    * @return {User|undefined} Relevant User object if found, `undefined` if not found.
    */
-  findUser (nickname) {
+  findUser(nickname) {
     nickname = normalize(nickname)
     return this.users.find(user => normalize(user.nickname) === nickname);
   }
@@ -85,7 +85,7 @@ class Server extends net.Server {
    *
    * @return {Channel|undefined} Relevant Channel object if found, `undefined` if not found.
    */
-  findChannel (channelName) {
+  findChannel(channelName) {
     return this.channels.get(normalize(channelName))
   }
 
@@ -96,7 +96,7 @@ class Server extends net.Server {
    *
    * @return {Channel} The new Channel.
    */
-  createChannel (channelName) {
+  createChannel(channelName) {
     channelName = normalize(channelName)
     if (!Channel.isValidChannelName(channelName)) {
       throw new Error('Invalid channel name')
@@ -116,7 +116,7 @@ class Server extends net.Server {
    *
    * @return {Channel} The Channel.
    */
-  getChannel (channelName) {
+  getChannel(channelName) {
     if (!Channel.isValidChannelName(channelName)) return;
     return this.findChannel(channelName) || this.createChannel(channelName);
   }
@@ -128,19 +128,19 @@ class Server extends net.Server {
    *
    * @return {boolean} True if the channel exists, false if not.
    */
-  hasChannel (channelName) {
+  hasChannel(channelName) {
     return this.channels.has(normalize(channelName))
   }
 
-  use (command, fn) {
+  use(command, fn) {
     if (!fn) {
-      [ command, fn ] = [ '', command ]
+      [command, fn] = ['', command]
     }
     debug('register middleware', command)
     this.middleware.push({ command, fn })
   }
 
-  execute (message, cb) {
+  execute(message, cb) {
     debug('exec', message + '')
     message.server = this
     each(this.middleware, (mw, idx, next) => {
@@ -163,7 +163,7 @@ class Server extends net.Server {
    *
    * @param {Message} message Message to send.
    */
-  send (message) {
+  send(message) {
     if (!(message instanceof Message)) {
       message = new Message(...arguments)
     }
@@ -175,12 +175,12 @@ class Server extends net.Server {
    *
    * @return {string} Mask.
    */
-  mask () {
+  mask() {
     return this.hostname;
   }
 }
 
-function normalize (str) {
+function normalize(str) {
   return str.toLowerCase().trim()
     // {, } and | are uppercase variants of [, ] and \ respectively
     .replace(/{/g, '[')

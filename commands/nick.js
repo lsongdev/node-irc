@@ -10,25 +10,23 @@ module.exports = function nick ({ user, server, parameters: [ nickname ] }) {
 
   debug('NICK', user.mask(), nickname)
 
-  if (nickname === user.nickname) {
-    // ignore
-    return
-  }
   if (!nickname || nickname.length === 0) {
     return user.send(server, ERR_NONICKNAMEGIVEN, [ 'No nickname given' ]);
   }
 
-  let lnick = nickname.toLowerCase()
+  if (nickname === user.nickname) {
+    // ignore
+    return
+  }
+
+  const lnick = nickname.toLowerCase()
   if (server.users.some((us) => us.nickname &&
                                 us.nickname.toLowerCase() === lnick &&
                                 us !== user)) {
-    return user.send(server, ERR_NICKNAMEINUSE,
+    return user.send(server, ERR_NICKNAMEINUSE, 
       [ user.nickname, nickname, ':Nickname is already in use' ])
   }
-
+  user.nickname = nickname;
   user.send(user, 'NICK', [ nickname ])
-  user.channels.forEach((chan) => {
-    chan.broadcast(user, 'NICK', [ nickname ])
-  })
-  user.nickname = nickname
+  user.channels.forEach(chan => chan.broadcast(user, 'NICK', [ nickname ]));
 }

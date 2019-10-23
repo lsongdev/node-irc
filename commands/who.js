@@ -3,7 +3,7 @@ const {
   RPL_ENDOFWHO
 } = require('../replies')
 
-module.exports = function who ({ user, server, parameters: [ channelName ] }) {
+function who({ user, server, parameters: [channelName] }) {
   let channel = server.findChannel(channelName)
   if (channel) {
     channel.users.forEach((u) => {
@@ -16,6 +16,8 @@ module.exports = function who ({ user, server, parameters: [ channelName ] }) {
         mode, ':0', u.realname
       ])
     })
-    user.send(server, RPL_ENDOFWHO, [ user.nickname, channelName, ':End of /WHO list.' ])
+    user.send(server, RPL_ENDOFWHO, [user.nickname, channelName, ':End of /WHO list.'])
   }
 }
+
+module.exports = who;

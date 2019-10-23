@@ -20,6 +20,7 @@ function USER({ user, server, parameters }) {
 
   user.username = username;
   user.realname = realname;
+  user.hostname = hostname;
   user.servername = servername;
 
   user.send(server, '001', [ user.nickname, ':Welcome' ]);

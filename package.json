@@ -7,20 +7,20 @@
     "example": "example"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node test",
     "start": "node example"
   },
   "keywords": [
     "irc",
     "irc-server"
   ],
-  "author": "lsong",
+  "author": "Lsong",
   "license": "MIT",
   "dependencies": {
-    "each-async": "^1.1.1",
     "split2": "^2.1.1",
+    "each-async": "^1.1.1",
     "stream-combiner": "^0.2.2",
-    "to2": "^1.0.0"
+    "flush-write-stream": "^2.0.0"
   },
   "devDependencies": {},
   "repository": {

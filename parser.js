@@ -1,12 +1,12 @@
 const split = require('split2');
-const {debuglog} = require('util');
+const { debuglog } = require('util');
 const through = require('through2');
 const combine = require('stream-combiner');
 const Message = require('./message');
 
-const debug = debuglog('ircs:MessageParser')
+const debug = debuglog('ircs:MessageParser');
 
-function MessageParser () {
+function MessageParser() {
   return combine(
     split('\r\n'),
     through.obj(parse)
@@ -18,7 +18,7 @@ function MessageParser () {
    * @param {string} line IRC command string.
    * @return {Message}
    */
-  function parse (line, enc, cb) {
+  function parse(line, enc, cb) {
     debug('parsing', line)
 
     let prefix
@@ -35,7 +35,7 @@ function MessageParser () {
     if (colon !== -1) {
       let append = line.slice(colon + 2)
       line = line.slice(0, colon)
-      params = line.split(/ +/g).concat([ append ])
+      params = line.split(/ +/g).concat([append])
     } else {
       params = line.split(/ +/g)
     }

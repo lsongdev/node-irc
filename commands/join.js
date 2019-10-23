@@ -6,7 +6,7 @@ const {
 
 const names = require('./names')
 
-module.exports = function join (opts) {
+function join (opts) {
   const { user, server, parameters: [ channelNames ] } = opts
 
   if (!channelNames) {
@@ -33,3 +33,5 @@ module.exports = function join (opts) {
     }
   }
 }
+
+module.exports = join;
