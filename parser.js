@@ -8,7 +8,7 @@ const debug = debuglog('ircs:MessageParser');
 
 function MessageParser() {
   return combine(
-    split('\r\n'),
+    split('\n'),
     through.obj(parse)
   )
 
